@@ -60,9 +60,11 @@ $mw->login( { lgname => $user, lgpassword => $pass } )
 
 ### Extract the portal list
 @portal_list = grep(/^Portal:/, @article_list);
+#@portal_list = grep(!/^Portal:Raumfahrt\//, @portal_list);
 
 ### Extract the categorie list
 @categorie_list = grep(/^Kategorie:/, @article_list);
+@categorie_list = grep(!/^Kategorie:Raumfahrt/, @categorie_list);
 
 ### Removing some content from the article list
 @article_list = grep(!/^Kategorie:/, @article_list);
@@ -85,13 +87,16 @@ binmode ARTICLE, ':utf8';
     my $first = 0;
     my $char;
     my $lastchar = "";
+    my $link;
+    my $text;
+
     foreach my $fileout (@article_list)
     {
 
         $char = substr($fileout, 0, 1);
         if( $char ne $lastchar )
         {
-            print ARTICLE "\n\n=== $char ===\n";
+            print ARTICLE "\n\n=== [[Portal:Raumfahrt/Index/$char|$char]] ===\n";
             print ARTICLE ": ";
             $lastchar = $char;
             $first = 0;
@@ -106,34 +111,57 @@ binmode ARTICLE, ':utf8';
     }
 
     print ARTICLE "\n\n== Kategorien ==\n";
-    print ARTICLE ": ";
 
     $first = 0;
+    $lastchar = "";
     foreach my $fileout (@categorie_list)
     {
+        $link = $fileout;
+        $text = $fileout;
+        $text =~ s/^Kategorie://;
+
+        $char = substr($text, 0, 1);
+        if( $char ne $lastchar )
+        {
+            print ARTICLE "\n: ";
+            $lastchar = $char;
+            $first = 0;
+        }
+
         if( $first != 0 )
         {
             print ARTICLE ", ";
         }
-        print ARTICLE "[[:$fileout]]";
+
+        print ARTICLE "[[:$link|$text]]";
         $first = 1;
     }
 
     print ARTICLE "\n\n== Portal Seiten ==\n";
-    print ARTICLE ": ";
 
     $first = 0;
+    $lastchar = "";
     foreach my $fileout (@portal_list)
     {
+        $link = $fileout;
+        $text = $fileout;
+        $text =~ s/^Portal:Raumfahrt\///;
+
+        $char = substr($text, 0, 1);
+        if( $char ne $lastchar )
+        {
+            print ARTICLE "\n: ";
+            $lastchar = $char;
+            $first = 0;
+        }
+
         if( $first != 0 )
         {
             print ARTICLE ", ";
         }
-        if( $fileout ne "Portal:Raumfahrt/Index" )
-        {
-            print ARTICLE "[[$fileout]]";
-            $first = 1;
-        }
+
+        print ARTICLE "[[$link|$text]]";
+        $first = 1;
     }
 
     print ARTICLE "[[Kategorie:Portal:Raumfahrt/Index]]\n\n";
