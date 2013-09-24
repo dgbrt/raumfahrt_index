@@ -58,6 +58,7 @@ $mw->login( { lgname => $user, lgpassword => $pass } )
 ### Sorting
 @article_list = sort @article_list;
 
+
 ### Extract the portal list
 @portal_list = grep(/^Portal:/, @article_list);
 #@portal_list = grep(!/^Portal:Raumfahrt\//, @portal_list);
@@ -106,6 +107,14 @@ binmode ARTICLE, ':utf8';
         {
             print ARTICLE ", ";
         }
+
+        $fileout =~ s/Apollo 0/Apollo /;
+        $fileout =~ s/Gemini 0/Gemini /;
+        $fileout =~ s/ISS-Expedition 0/ISS-Expedition /;
+        $fileout =~ s/STS-00/STS-/;
+        $fileout =~ s/STS-0/STS-/;
+        $fileout =~ s/Sojus 0/Sojus /;
+
         print ARTICLE "[[$fileout]]";
         $first = 1;
     }
@@ -143,6 +152,7 @@ binmode ARTICLE, ':utf8';
     $lastchar = "";
     foreach my $fileout (@portal_list)
     {
+        $fileout =~ s/Portal:Raumfahrt\/Artikel der Woche\/Kalenderwoche 0/Portal:Raumfahrt\/Artikel der Woche\/Kalenderwoche /;
         $link = $fileout;
         $text = $fileout;
         $text =~ s/^Portal:Raumfahrt\///;
@@ -196,7 +206,7 @@ sub get_categorie
         cmtitle => $categorie,
         cmlimit => 'max'
      },
-     { max => 10, hook => \&get_entries
+     { max => 100, hook => \&get_entries
     })
     || die $mw->{error}->{code} . ': ' . $mw->{error}->{details};
 
@@ -217,8 +227,9 @@ sub get_categorie
         }
         if( $add == 0 )
         {
-            $number_of_entries += push(@article_list, $article);
+            $number_of_entries = push(@article_list, $article);
         }
+        $add = 0;
     }
 
 
@@ -246,9 +257,44 @@ sub get_categorie
 sub get_entries
 {
     my ($ref) = @_;
+    my $title;
+
     foreach (@$ref)
     {
-        #print "$_->{title}\n";
-        push(@result_list, $_->{title})
+        $title = $_->{title};
+
+        ### Add zeros for sorting
+        if( grep(/^Apollo/, $title) && length($title) == 8 )
+        {
+            substr($title, 7, 0) = '0';
+        }
+        if( grep(/^Gemini/, $title) && length($title) == 8 )
+        {
+            substr($title, 7, 0) = '0';
+        }
+        if( grep(/^ISS-Expedition/, $title) && length($title) == 16 )
+        {
+            substr($title, 15, 0) = '0';
+        }
+        if( grep(/^STS-/, $title) && length($title) == 5 )
+        {
+            substr($title, 4, 0) = '00';
+        }
+        if( grep(/^STS-/, $title) && length($title) == 6 )
+        {
+            substr($title, 4, 0) = '0';
+        }
+        if( grep(/^Sojus/, $title) && length($title) == 7 )
+        {
+            substr($title, 6, 0) = '0';
+        }
+        if( grep(/^Portal:Raumfahrt\/Artikel der Woche\/Kalenderwoche/, $title) && length($title) == 50 )
+        {
+            substr($title, 49, 0) = '0';
+        }
+
+        push(@result_list, $title);
+
+
     }
 }
