@@ -82,12 +82,19 @@ binmode ARTICLE, ':utf8';
     my $date = DateTime->now->ymd;
     print ARTICLE "* '''Stand''': $date\n\n";
 
+    my $arrSize = @article_list;
+    print ARTICLE "*Anzahl Artikel: $arrSize\n";
+    $arrSize = @categorie_list;
+    print ARTICLE "*Anzahl Kategorien: $arrSize\n";
+    $arrSize = @portal_list;
+    print ARTICLE "*Anzahl Portalseiten: $arrSize\n\n\n";
 
-    print ARTICLE "== Artikel ==\n";
+    print ARTICLE "== Artikel ==";
 
     my $first = 0;
     my $char;
     my $lastchar = "";
+    my $special_index = "";
     my $link;
     my $text;
 
@@ -97,8 +104,38 @@ binmode ARTICLE, ':utf8';
         $char = substr($fileout, 0, 1);
         if( $char ne $lastchar )
         {
-            print ARTICLE "\n\n=== [[Portal:Raumfahrt/Index/$char|$char]] ===\n";
-            print ARTICLE ": ";
+            if( grep(/[0-9]/, $char) )
+            {
+                print ARTICLE "\n\n=== [[Portal:Raumfahrt/Index/0-9|Index 0-9]] ===\n";
+            }
+            else
+            {
+                if( $special_index eq "weitere" )
+                {
+                    print ARTICLE "\n\n=== [[Portal:Raumfahrt/Index/weitere|Index weitere]] ===\n: ";
+                    $special_index = "done1";
+                }
+                elsif( $special_index eq "" )
+                {
+                    print ARTICLE "\n\n=== [[Portal:Raumfahrt/Index/$char|Index $char]] ===\n";
+                    if( $char eq "Z" )
+                    {
+                        $special_index = "weitere";
+                    }
+                }
+            }
+            if( $special_index eq "" || $special_index eq "weitere" )
+            {
+                print ARTICLE ": ";
+            }
+            elsif( $special_index eq "done1" )
+            {
+                $special_index = "done2";
+            }
+            else
+            {
+                print ARTICLE ", ";
+            }
             $lastchar = $char;
             $first = 0;
         }
@@ -111,9 +148,16 @@ binmode ARTICLE, ':utf8';
         $fileout =~ s/Apollo 0/Apollo /;
         $fileout =~ s/Gemini 0/Gemini /;
         $fileout =~ s/ISS-Expedition 0/ISS-Expedition /;
+        $fileout =~ s/Luna 00000/Luna /;
+        $fileout =~ s/Pioneer 0/Pioneer /;
         $fileout =~ s/STS-00/STS-/;
         $fileout =~ s/STS-0/STS-/;
+        $fileout =~ s/Shenzhou 0/Shenzhou /;
         $fileout =~ s/Sojus 0/Sojus /;
+        $fileout =~ s/Sojus T-0/Sojus T-/;
+        $fileout =~ s/Sojus TM-0/Sojus TM-/;
+##        $fileout =~ s/Sojus TMA-0/Sojus TMA-/;
+        $fileout =~ s/Sputnik 0/Sputnik /;
 
         print ARTICLE "[[$fileout]]";
         $first = 1;
@@ -132,7 +176,7 @@ binmode ARTICLE, ':utf8';
         $char = substr($text, 0, 1);
         if( $char ne $lastchar )
         {
-            print ARTICLE "\n: ";
+            print ARTICLE "\n\n: ";
             $lastchar = $char;
             $first = 0;
         }
@@ -160,7 +204,7 @@ binmode ARTICLE, ':utf8';
         $char = substr($text, 0, 1);
         if( $char ne $lastchar )
         {
-            print ARTICLE "\n: ";
+            print ARTICLE "\n\n: ";
             $lastchar = $char;
             $first = 0;
         }
@@ -276,6 +320,14 @@ sub get_entries
         {
             substr($title, 15, 0) = '0';
         }
+        if( grep(/^Luna/, $title) && length($title) == 6 )
+        {
+            substr($title, 5, 0) = '00000';
+        }
+        if( grep(/^Pioneer/, $title) && length($title) == 9 )
+        {
+            substr($title, 8, 0) = '0';
+        }
         if( grep(/^STS-/, $title) && length($title) == 5 )
         {
             substr($title, 4, 0) = '00';
@@ -284,9 +336,29 @@ sub get_entries
         {
             substr($title, 4, 0) = '0';
         }
+        if( grep(/^Shenzhou/, $title) && length($title) == 10 )
+        {
+            substr($title, 9, 0) = '0';
+        }
         if( grep(/^Sojus/, $title) && length($title) == 7 )
         {
             substr($title, 6, 0) = '0';
+        }
+        if( grep(/^Sojus T-/, $title) && length($title) == 9 )
+        {
+            substr($title, 8, 0) = '0';
+        }
+        if( grep(/^Sojus TM-/, $title) && length($title) == 10 )
+        {
+            substr($title, 9, 0) = '0';
+        }
+##        if( grep(/^Sojus TMA-/, $title) && length($title) == 11 )
+##        {
+##            substr($title, 10, 0) = '0';
+##        }
+        if( grep(/^Sputnik/, $title) && length($title) == 9 )
+        {
+            substr($title, 8, 0) = '0';
         }
         if( grep(/^Portal:Raumfahrt\/Artikel der Woche\/Kalenderwoche/, $title) && length($title) == 50 )
         {
