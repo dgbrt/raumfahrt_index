@@ -42,6 +42,10 @@ my $level = 0;
 my $number_of_entries = 0;
 
 
+### Remove old index pages from current folder
+`rm Index*`;
+
+
 ### Wiki URL
 my $mw = MediaWiki::API->new();
 $mw->{config}->{api_url} = 'http://de.wikipedia.org/w/api.php';
@@ -97,6 +101,7 @@ binmode ARTICLE, ':utf8';
     my $special_index = "";
     my $link;
     my $text;
+    my $index_file ="";
 
     foreach my $fileout (@article_list)
     {
@@ -107,17 +112,20 @@ binmode ARTICLE, ':utf8';
             if( grep(/[0-9]/, $char) )
             {
                 print ARTICLE "\n\n=== [[Portal:Raumfahrt/Index/0-9|Index 0-9]] ===\n";
+                $index_file = "Index 0-9";
             }
             else
             {
                 if( $special_index eq "weitere" )
                 {
                     print ARTICLE "\n\n=== [[Portal:Raumfahrt/Index/weitere|Index weitere]] ===\n: ";
+                    $index_file = "Index weitere";
                     $special_index = "done1";
                 }
                 elsif( $special_index eq "" )
                 {
                     print ARTICLE "\n\n=== [[Portal:Raumfahrt/Index/$char|Index $char]] ===\n";
+                    $index_file = "Index $char";
                     if( $char eq "Z" )
                     {
                         $special_index = "weitere";
@@ -156,10 +164,19 @@ binmode ARTICLE, ':utf8';
         $fileout =~ s/Sojus 0/Sojus /;
         $fileout =~ s/Sojus T-0/Sojus T-/;
         $fileout =~ s/Sojus TM-0/Sojus TM-/;
-##        $fileout =~ s/Sojus TMA-0/Sojus TMA-/;
+        $fileout =~ s/Sojus TMA-0000/Sojus TMA-/;
+        $fileout =~ s/Sojus TMA-000/Sojus TMA-/;
         $fileout =~ s/Sputnik 0/Sputnik /;
 
         print ARTICLE "[[$fileout]]";
+
+
+        open (INDEX_FILE, ">>$index_file.txt");
+        binmode INDEX_FILE, ':utf8';
+        print INDEX_FILE "*[[$fileout]]\n";
+        close (INDEX_FILE);
+
+
         $first = 1;
     }
 
@@ -352,10 +369,14 @@ sub get_entries
         {
             substr($title, 9, 0) = '0';
         }
-##        if( grep(/^Sojus TMA-/, $title) && length($title) == 11 )
-##        {
-##            substr($title, 10, 0) = '0';
-##        }
+        if( grep(/^Sojus TMA-/, $title) && length($title) == 11 )
+        {
+            substr($title, 10, 0) = '0000';
+        }
+        if( grep(/^Sojus TMA-/, $title) && length($title) == 12 && grep(!/M$/, $title) )
+        {
+            substr($title, 10, 0) = '000';
+        }
         if( grep(/^Sputnik/, $title) && length($title) == 9 )
         {
             substr($title, 8, 0) = '0';
