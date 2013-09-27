@@ -81,7 +81,42 @@ open (ARTICLE, '>articles.txt');
 binmode ARTICLE, ':utf8';
 
     print ARTICLE "<noinclude>{{nobots|deny=verschieberest}}\n";
-    print ARTICLE "</noinclude>\n";
+    print ARTICLE "</noinclude>";
+    print ARTICLE "__NOTOC__";
+
+    print ARTICLE " '''Inhaltsverzeichnis'''\n";
+    print ARTICLE "  1. Artikel: [[Portal:Raumfahrt/Index#Index_0-9|0-9]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_A|A]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_B|B]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_C|C]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_D|D]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_E|E]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_F|F]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_G|G]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_H|H]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_I|I]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_J|J]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_K|K]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_L|L]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_M|M]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_N|N]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_O|O]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_P|P]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_Q|Q]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_R|R]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_S|S]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_T|T]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_U|U]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_V|V]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_W|W]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_X|X]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_Y|Y]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_Z|Z]] ";
+    print ARTICLE "[[Portal:Raumfahrt/Index#Index_weitere|weitere]]\n";
+
+    print ARTICLE "  2. [[Portal:Raumfahrt/Index#Kategorien|Kategorien]]\n";
+    print ARTICLE "  3. [[Portal:Raumfahrt/Index#Portal_Seiten|Portal Seiten]]\n";
+
 
     my $date = DateTime->now->ymd;
     print ARTICLE "* '''Stand''': $date\n\n";
@@ -154,9 +189,15 @@ binmode ARTICLE, ':utf8';
         }
 
         $fileout =~ s/Apollo 0/Apollo /;
+        $fileout =~ s/Cape Canaveral AFS Launch Complex 0/Cape Canaveral AFS Launch Complex /;
         $fileout =~ s/Gemini 0/Gemini /;
         $fileout =~ s/ISS-Expedition 0/ISS-Expedition /;
+        $fileout =~ s/Intelsat 00/Intelsat /;
+        $fileout =~ s/Intelsat 0/Intelsat /;
         $fileout =~ s/Luna 00000/Luna /;
+        $fileout =~ s/Mariner 0/Mariner /;
+        $fileout =~ s/OSCAR 0/OSCAR /;
+        $fileout =~ s/PanAmSat 0/PanAmSat /;
         $fileout =~ s/Pioneer 0/Pioneer /;
         $fileout =~ s/STS-00/STS-/;
         $fileout =~ s/STS-0/STS-/;
@@ -167,6 +208,7 @@ binmode ARTICLE, ':utf8';
         $fileout =~ s/Sojus TMA-0000/Sojus TMA-/;
         $fileout =~ s/Sojus TMA-000/Sojus TMA-/;
         $fileout =~ s/Sputnik 0/Sputnik /;
+        $fileout =~ s/Telstar 0/Telstar /;
 
         print ARTICLE "[[$fileout]]";
 
@@ -329,6 +371,10 @@ sub get_entries
         {
             substr($title, 7, 0) = '0';
         }
+        if( grep(/^Cape Canaveral AFS Launch Complex/, $title) && length($title) == 35 )
+        {
+            substr($title, 34, 0) = '0';
+        }
         if( grep(/^Gemini/, $title) && length($title) == 8 )
         {
             substr($title, 7, 0) = '0';
@@ -337,9 +383,29 @@ sub get_entries
         {
             substr($title, 15, 0) = '0';
         }
+        if( grep(/^Intelsat/, $title) && length($title) == 10 )
+        {
+            substr($title, 9, 0) = '00';
+        }
+        if( grep(/^Intelsat/, $title) && length($title) == 11 )
+        {
+            substr($title, 9, 0) = '0';
+        }
         if( grep(/^Luna/, $title) && length($title) == 6 )
         {
             substr($title, 5, 0) = '00000';
+        }
+        if( grep(/^Mariner/, $title) && length($title) == 9 )
+        {
+            substr($title, 8, 0) = '0';
+        }
+        if( grep(/^OSCAR/, $title) && length($title) == 7 )
+        {
+            substr($title, 6, 0) = '0';
+        }
+        if( grep(/^PanAmSat/, $title) && length($title) == 10 )
+        {
+            substr($title, 9, 0) = '0';
         }
         if( grep(/^Pioneer/, $title) && length($title) == 9 )
         {
@@ -378,6 +444,10 @@ sub get_entries
             substr($title, 10, 0) = '000';
         }
         if( grep(/^Sputnik/, $title) && length($title) == 9 )
+        {
+            substr($title, 8, 0) = '0';
+        }
+        if( grep(/^Telstar/, $title) && length($title) == 9 )
         {
             substr($title, 8, 0) = '0';
         }
