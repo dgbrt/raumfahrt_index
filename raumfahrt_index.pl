@@ -42,10 +42,6 @@ my $level = 0;
 my $number_of_entries = 0;
 
 
-### Remove old index pages from current folder
-`rm Index*`;
-
-
 ### Wiki URL
 my $mw = MediaWiki::API->new();
 $mw->{config}->{api_url} = 'http://de.wikipedia.org/w/api.php';
@@ -147,20 +143,29 @@ binmode ARTICLE, ':utf8';
             if( grep(/[0-9]/, $char) )
             {
                 print ARTICLE "\n\n=== [[Portal:Raumfahrt/Index/0-9|Index 0-9]] ===\n";
+                close (INDEX_FILE);
                 $index_file = "Index 0-9";
+                open (INDEX_FILE, ">$index_file.txt");
+                &write_index_header($index_file);
             }
             else
             {
                 if( $special_index eq "weitere" )
                 {
                     print ARTICLE "\n\n=== [[Portal:Raumfahrt/Index/weitere|Index weitere]] ===\n: ";
+                    close (INDEX_FILE);
                     $index_file = "Index weitere";
+                    open (INDEX_FILE, ">$index_file.txt");
+                    &write_index_header($index_file);
                     $special_index = "done1";
                 }
                 elsif( $special_index eq "" )
                 {
                     print ARTICLE "\n\n=== [[Portal:Raumfahrt/Index/$char|Index $char]] ===\n";
+                    close (INDEX_FILE);
                     $index_file = "Index $char";
+                    open (INDEX_FILE, ">$index_file.txt");
+                    &write_index_header($index_file);
                     if( $char eq "Z" )
                     {
                         $special_index = "weitere";
@@ -212,12 +217,8 @@ binmode ARTICLE, ':utf8';
 
         print ARTICLE "[[$fileout]]";
 
-
-        open (INDEX_FILE, ">>$index_file.txt");
         binmode INDEX_FILE, ':utf8';
         print INDEX_FILE "*[[$fileout]]\n";
-        close (INDEX_FILE);
-
 
         $first = 1;
     }
@@ -284,6 +285,7 @@ close (ARTICLE);
 
 print "Number of all scanned entries: $number_of_entries\n";
 
+close (INDEX_FILE);
 
 
 ### Get a list of articles in category
@@ -460,4 +462,42 @@ sub get_entries
 
 
     }
+}
+
+sub write_index_header
+{
+    print INDEX_FILE "[[Kategorie:Wikipedia:Themenliste|Raumfahrt]]\n";
+
+    my $date = DateTime->now->ymd;
+    print INDEX_FILE "* '''Stand''': $date\n\n";
+
+    print INDEX_FILE " '''Index:''' ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/0-9|0-9]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/A|A]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/B|B]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/C|C]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/D|D]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/E|E]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/F|F]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/G|G]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/H|H]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/I|I]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/J|J]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/K|K]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/L|L]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/M|M]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/N|N]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/O|O]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/P|P]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/Q|Q]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/R|R]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/S|S]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/T|T]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/U|U]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/V|V]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/W|W]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/X|X]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/Y|Y]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/Z|Z]] ";
+    print INDEX_FILE "[[Portal:Raumfahrt/Index/weitere|weitere]]\n";
 }
