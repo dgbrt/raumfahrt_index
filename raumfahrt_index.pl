@@ -132,7 +132,8 @@ binmode ARTICLE, ':utf8';
     my $special_index = "";
     my $link;
     my $text;
-    my $index_file ="";
+    my $index_file = "";
+    my $number_index = "";
 
     foreach my $fileout (@article_list)
     {
@@ -142,11 +143,19 @@ binmode ARTICLE, ':utf8';
         {
             if( grep(/[0-9]/, $char) )
             {
-                print ARTICLE "\n\n=== [[Portal:Raumfahrt/Index/0-9|Index 0-9]] ===\n";
                 close (INDEX_FILE);
                 $index_file = "Index 0-9";
-                open (INDEX_FILE, ">$index_file.txt");
-                &write_index_header($index_file);
+                if( $number_index eq "" )
+                {
+                    $number_index = "yes";
+                    print ARTICLE "\n\n=== [[Portal:Raumfahrt/Index/0-9|Index 0-9]] ===\n";
+                    open (INDEX_FILE, ">$index_file.txt");
+                    &write_index_header("0-9");
+                }
+                else
+                {
+                    open (INDEX_FILE, ">>$index_file.txt");
+                }
             }
             else
             {
@@ -156,7 +165,7 @@ binmode ARTICLE, ':utf8';
                     close (INDEX_FILE);
                     $index_file = "Index weitere";
                     open (INDEX_FILE, ">$index_file.txt");
-                    &write_index_header($index_file);
+                    &write_index_header("weitere");
                     $special_index = "done1";
                 }
                 elsif( $special_index eq "" )
@@ -165,7 +174,7 @@ binmode ARTICLE, ':utf8';
                     close (INDEX_FILE);
                     $index_file = "Index $char";
                     open (INDEX_FILE, ">$index_file.txt");
-                    &write_index_header($index_file);
+                    &write_index_header($char);
                     if( $char eq "Z" )
                     {
                         $special_index = "weitere";
@@ -467,6 +476,7 @@ sub get_entries
 sub write_index_header
 {
     print INDEX_FILE "[[Kategorie:Wikipedia:Themenliste|Raumfahrt]]\n";
+    print INDEX_FILE "[[Kategorie:Portal:Raumfahrt/Index|$_[0]]]\n";
 
     my $date = DateTime->now->ymd;
     print INDEX_FILE "* '''Stand''': $date\n\n";
